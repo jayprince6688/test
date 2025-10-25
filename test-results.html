@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOULTEST - 测试结果页面</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',      // 主色调色：靛蓝色
+                        secondary: '#10B981',    // 辅助色：绿色
+                        background: '#F9FAFB',   // 背景色：浅灰
+                        text: '#111827',         // 文本色：深灰
+                        light: '#F3F4F6',        // 浅色背景
+                        muted: '#6B7280',        // 次要要文本色
+                        warning: '#F59E0B'       // 警告色：琥珀色
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        '12': '12px',
+                        '16': '16px',
+                        '20': '20px',
+                    },
+                    screens: {
+                        'xs': '360px',    // 小型手机
+                        'sm': '640px',    // 标准手机
+                        'md': '768px',    // 平板
+                        'lg': '1024px',   // 笔记本
+                        'xl': '1280px',   // 桌面
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <!-- 自定义样式 -->
+    <style rel="stylesheet">
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB;
+            color: #111827;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-hover-effect:hover {
+            transform: translateY(-2px);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .warning-badge {
+            background-color: #FEE2E2;
+            color: #DC2626;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .option-item.selected {
+            border-color: #4F46E5;
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+        
+        .option-item.selected .option-indicator {
+            border-color: #4F46E5;
+        }
+        
+        .option-item.selected .option-check {
+            display: block;
+        }
+        
+        .page-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .progress-animation {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部隐私提示 -->
+    <div class="bg-primary/10 text-primary text-center py-2 px-4 text-xs sm:text-sm">
+        <i class="fa fa-lock mr-1"></i> 您的数据仅存储在本地，完全保密 | <a href="https://soultest.top" class="underline font-medium" target="_blank">访问官网官网 soultest.top</a>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 xs:px-4 sm:px-6 md:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items: flex items-center">
+                        <div class="w-8 h-8 mr-2 rounded-full bg-gradient-to-r from-primary to-purple-500 flex: items-center justify-center">
+                            <i class="fa fa-heartbeat text-lg text-white relative z-10"></i>
+                        </div>
+                        <span class="font-bold text-base xs:text-lg sm:text-lg text-primary">SOULTEST</span>
+                    </div>
+                    
+                    <!-- 桌面导航 -->
+                    <div class="hidden lg:ml-8 lg:flex lg:space-x-8">
+                        <a href="index.html#home" class="text-muted hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-primary/30 text-sm font-medium transition-smooth">
+                            首页
+                        </a>
+                        <a href="index.html#about" class="text-muted hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-primary/30 text-sm font-medium transition-smooth">
+                            关于
+                        </a>
+                        <a href="index.html#test" class="text-muted hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-primary/30 text-sm font-medium transition-smooth">
+                            测试
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 移动端菜单按钮 - 仅在大屏幕显示 -->
+                <div class="hidden lg:flex items-center">
+                    <button id="mobile-menu-button" class="text-muted hover:text-primary focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="hidden lg:hidden lg:hidden bg-white border-t border-gray-100">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html#home" class="block px-3 py-2 rounded-md text-base font-medium text-muted hover:text-primary hover:bg-light transition-smooth">
+                    首页
+                </a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-muted hover:text-primary hover:bg-light transition-smooth">
+                    关于
+                </a>
+                <a href="index.html#test" class="block px-3 py-2 rounded-md text-base font-medium text-muted hover:text-primary hover:bg-light transition-smooth">
+                    测试
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="max-w-7xl mx-auto px-4 xs:px-4 sm:px-6 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pb-20 lg:pb-8 min-h-[calc(100vh-100px)]">
+        <!-- 页面容器 -->
+        <div id="app-container">
+            <!-- 结果页面 -->
+            <div id="result-page" class="page-transition">
+                <div class="max-w-2xl xs:max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto">
+                    <div class="text-center my-4 xs:my-6 sm:my-8">
+                        <h2 class="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-2 sm:mb-3">测试结果</h2>
+                        <p class="text-muted text-xs xs:text-sm sm:text-base">SCL-90症状自评量表测试结果分析</p>
+                    </div>
+                    
+                    <!-- 基本结果概览 -->
+                    <div class="bg-white rounded-16 p-3 xs:p-4 sm:p-5 lg:p-6 card-shadow mb-4 xs:mb-6 sm:mb-8">
+                        <h3 class="text-sm xs:text-base sm:text-lg font-semibold mb-3 xs:mb-4">基本指标</h3>
+                        
+                        <div class="grid grid-cols-2 gap-3 xs:gap-4 sm:gap-5">
+                            <div class="bg-blue-50 rounded-12 p-3 xs:p-4 text-center">
+                                <p class="text-blue-600 text-xs xs:text-sm mb-1">总分</p>
+                                <p id="total-score" class="text-xl xs:text-2xl sm:text-3xl font-bold text-blue-600">180</p>
+                                <p class="text-xs text-blue-500 mt-1">正常范围：≤160分</p>
+                            </div>
+                            
+                            <div class="bg-green-50 rounded-12 p-3 xs:p-4 text-center">
+                                <p class="text-green-600 text-xs xs:text-sm mb-1">阳性项目数</p>
+                                <p id="positive-items" class="text-xl xs:text-2xl sm:text-3xl font-bold text-green-600">52</p>
+                                <p class="text-xs text-green-500 mt-1">正常范围：≤43项</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 rounded-12 p-3 xs:p-4 text-center">
+                                <p class="text-purple-600 text-xs xs:text-sm mb-1">总症状指数</p>
+                                <p id="symptom-index" class="text-xl xs:text-2xl sm:text-3xl font-bold text-purple-600">2.00</p>
+                                <p class="text-xs text-purple-500 mt-1">正常范围：≤1.67</p>
+                            </div>
+                            
+                            <div class="bg-orange-50 rounded-12 p-3 xs:p-4 text-center">
+                                <p class="text-orange-600 text-xs xs:text-sm mb-1">阳性症状均分</p>
+                                <p id="positive-symptom-mean" class="text-xl xs:text-2xl sm:text-3xl font-bold text-orange-600">2.75</p>
+                                <p class="text-xs text-orange-500 mt-1">反映症状严重程度</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 各维度得分雷达图 -->
+                    <div class="bg-white rounded-16 p-3 xs:p-4 sm:p-5 lg:p-6 card-shadow mb-4 xs:mb-6 sm:mb-8">
+                        <h3 class="text-sm xs:text-base sm:text-lg font-semibold mb-3 xs:mb-4">各维度得分</h3>
+                        <div class="chart-container">
+                            <canvas id="result-chart"></canvas>
+                        </div>
+                        <p class="text-xs text-muted text-center mt-3">得分范围：1-5分，分数越高表示症状越明显</p>
+                    </div>
+                    
+                    <!-- 结果分析与建议 -->
+                    <div class="bg-white rounded-16 p-3 xs:p-4 sm:p-5 lg:p-6 card-shadow mb-4 xs:mb-6 sm:mb-8">
+                        <h3 class="text-sm xs:text-base sm:text-lg font-semibold mb-3 xs:mb-4">结果分析与建议</h3>
+                        <div id="result-advice" class="text-xs xs:text-sm sm:text-base space-y-3">
+                            <!-- 总体分析 -->
+                            <div class="mb-3">
+                                <h4 class="font-semibold text-black text-sm mb-2">总体评估</h4>
+                                <p class="font-medium text-yellow-500 mb-1">心理健康状况一般，需关注</p>
+                                <p class="text-muted">您的心理健康状况一般，存在一定程度的心理困扰。建议关注自己的心理状态，适当调整生活方式，必要时寻求专业帮助。</p>
+                                
+                                <!-- 测试指标解释 -->
+                                <div class="mt-2">
+                                    <p class="text-xs text-muted"><span class="font-medium">总分</span>：180分，反映整体心理健康心理健康状况。</p>
+                                    <p class="text-xs text-muted"><span class="font-medium">阳性项目数</span>：52项，反映存在症状的项目数量。</p>
+                                    <p class="text-xs text-muted"><span class="font-medium">总症状指数</span>：2.00，反映症状的平均严重程度。</p>
+                                    <p class="text-xs text-muted"><span class="font-medium">阳性症状均分</span>：2.75，反映有症状项目的平均严重程度。</p>
+                                </div>
+                            </div>
+                            
+                            <!-- 各维度分析 -->
+                            <div>
+                                <h4 class="font-semibold text-black text-sm mb-2">各维度分析</h4>
+                                <div class="space-y-2">
+                                    <!-- 躯体化 -->
+                                    <div class="bg-blue-50 rounded-12 p-2 border border-blue-100">
+                                        <p class="font-medium text-black">躯体化 (2.20) - 中度</p>
+                                        <p class="text-xs text-black">反映身体不适感。您可能经常感到身体不适，如头痛、背痛、睡眠障碍等。</p>
+                                    </div>
+                                    
+                                    <!-- 强迫症状 -->
+                                    <div class="bg-purple-50 rounded-12 p-2 border border-purple-100">
+                                        <p class="font-medium text-black">强迫症状 (2.30) - 中度</p>
+                                        <p class="text-xs text-black">反映无法摆脱的无意义想法和行为。您可能经常出现一些不必要的重复想法或行为。</p>
+                                    </div>
+                                    
+                                    <!-- 人际关系敏感 -->
+                                    <div class="bg-green-50 rounded-12 p-2 border border-green-100">
+                                        <p class="font-medium text-black">人际关系敏感 (1.80) - 轻度</p>
+                                        <p class="text-xs text-black">反映人际不自在与自卑感。您可能在人际交往中偶尔感到不自在或自卑。</p>
+                                    </div>
+                                    
+                                    <!-- 抑郁 -->
+                                    <div class="bg-orange-50 rounded-12 p-2 border border-orange-100">
+                                        <p class="font-medium text-black">抑郁 (2.50) - 中度</p>
+                                        <p class="text-xs text-black">反映苦闷情感与心境。您可能经常感到情绪低落，对生活兴趣减退。</p>
+                                    </div>
+                                    
+                                    <!-- 焦虑 -->
+                                    <div class="bg-red-50 rounded-12 p-2 border border-red-100">
+                                        <p class="font-medium text-black">焦虑 (2.40) - 中度</p>
+                                        <p class="text-xs text-black">反映烦躁、紧张和神经过敏。您可能经常感到紧张、不安或烦躁。</p>
+                                    </div>
+                                    
+                                    <!-- 敌对 -->
+                                    <div class="bg-yellow-50 rounded-12 p-2 border border-yellow-100">
+                                        <p class="font-medium text-black">敌对 (1.90) - 轻度</p>
+                                        <p class="text-xs text-black">反映敌对思想与行为。您可能偶尔会感到烦躁或对他人产生敌对情绪。</p>
+                                    </div>
+                                    
+                                    <!-- 恐怖 -->
+                                    <div class="bg-indigo-50 rounded-12 p-2 border border-indigo-100">
+                                        <p class="font-medium text-black">恐怖 (1.50) - 轻度</p>
+                                        <p class="text-xs text-black">反映对特定场合或事物的恐惧。您可能对某些特定情境或场所存在轻度恐惧。</p>
+                                    </div>
+                                    
+                                    <!-- 偏执 -->
+                                    <div class="bg-pink-50 rounded-12 p-2 border border-pink-100">
+                                        <p class="font-medium text-black">偏执 (1.70) - 轻度</p>
+                                        <p class="text-xs text-black">反映猜疑、投射性思维等。您可能偶尔会对他人的动机产生怀疑。</p>
+                                    </div>
+                                    
+                                    <!-- 精神病性 -->
+                                    <div class="bg-teal-50 rounded-12 p-2 border border-teal-100">
+                                        <p class="font-medium text-black">精神病性 (1.60) - 轻度</p>
+                                        <p class="text-xs text-black">反映精神病性症状。您可能偶尔会有一些不寻常的想法或体验。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 专业建议 -->
+                            <div class="mt-3">
+                                <h4 class="font-semibold text-black text-sm mb-2">专业建议</h4>
+                                <div class="rounded-16 p-4 border bg-yellow-50 border-yellow-200">
+                                    <h5 class="font-medium text-black mb-3">心理改善建议</h5>
+                                    <ul class="list-disc list-inside text-xs text-black space-y-2">
+                                        <li>寻求专业心理咨询，了解更多应对策略</li>
+                                        <li>学习情绪调节技巧，提高情绪管理能力</li>
+                                        <li>建立健康的生活习惯，改善饮食和睡眠质量</li>
+                                        <li>适当减少工作或学习压力，避免过度劳累</li>
+                                        <li>参加社交活动，扩大社交圈子，减少孤独感</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 p-3 bg-secondary/5 rounded-16 border border-secondary/10">
+                                <h5 class="font-medium text-secondary mb-2">日常心理健康维护</h5>
+                                <ul class="list-disc list-inside text-xs text-green-700 space-y-1">
+                                    <li>保持规律作息，确保充足睡眠（7-8小时/天）</li>
+                                    <li>坚持适度体育锻炼，每周至少150分钟</li>
+                                    <li>培养积极乐观心态，学习压力管理技巧</li>
+                                    <li>维护良好人际关系，适当参与社交活动</li>
+                                    <li>学习放松技巧，如深呼吸、冥想等</li>
+                                    <li>保持均衡饮食，减少咖啡因和酒精摄入</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- 专业帮助建议 -->
+                            <div class="mt-3 p-3 bg-red-50 rounded-12 border border-red-100">
+                                <h4 class="font-medium text-red-500 mb-2">专业帮助建议</h4>
+                                <p class="text-xs text-muted">根据您的测试结果，建议您考虑寻求专业的心理健康服务：</p>
+                                <ul class="list-disc list-inside text-xs text-muted space-y-1 mt-1">
+                                    <li>心理咨询师：提供心理评估、心理咨询和心理治疗</li>
+                                    <li>心理医生/精神科医师：提供专业诊断和必要的药物治疗</li>
+                                    <li>心理健康热线：提供24小时心理支持和危机干预</li>
+                                </ul>
+                                <p class="text-xs text-muted mt-2">请记住，寻求帮助是勇敢的表现，专业的心理健康服务可以帮助您更好地应对心理困扰。</p>
+                            </div>
+                            
+                            <!-- 结果说明 -->
+                            <div class="mt-3 p-2 bg-light rounded-12">
+                                <p class="text-xs text-muted">
+                                    <i class="fa fa-info-circle mr-1"></i> 本测试结果仅供参考，不替代专业医疗诊断。
+                                    如有严重心理困扰，请及时寻求专业心理医生或精神科医师的帮助。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 结果操作按钮 -->
+                    <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mt-4 xs:mt-6">
+                        <button id="restart-test-btn" class="bg-primary hover:bg-primary/90 text-white py-2 xs:py-3 px-6 xs:px-8 rounded-16 font-medium transition-smooth text-xs xs:text-sm btn-hover-effect">
+                            <i class="fa fa-refresh mr-2"></i> 重测一次
+                        </button>
+                        <button id="back-to-home" class="bg-secondary hover:bg-secondary/90 text-white py-2 xs:py-3 px-6 xs:px-8 rounded-16 font-medium transition-smooth text-xs xs:text-sm btn-hover-effect">
+                            返回首页
+                        </button>
+                    </div>
+                    
+                    <!-- 结果说明 -->
+                    <div class="max-w-xl mx-auto bg-light rounded-16 p-3 xs:p-4 text-center mt-6 xs:mt-8">
+                        <p class="text-xs text-muted">
+                            <i class="fa fa-info-circle mr-1"></i> 本测试结果仅供参考，不替代专业医疗诊断。
+                            如有需要，请咨询专业心理医生或精神科医师。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 lg:hidden">
+        <div class="flex justify-around">
+            <a href="index.html#home" class="flex flex-col items-center py-2 px-4 text-muted">
+                <i class="fa fa-home text-lg"></i>
+                <span class="text-xs mt-1">首页</span>
+            </a>
+            <a href="index.html#about" class="flex flex-col items-center py-2 px-4 text-muted">
+                <i class="fa fa-info-circle text-lg"></i>
+                <span class="text-xs mt-1">关于</span>
+            </a>
+            <a href="index.html#my" class="flex flex-col items-center py-2 px-4 text-muted">
+                <i class="fa fa-user text-lg"></i>
+                <span class="text-xs mt-1">我的</span>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化雷达图
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('result-chart').getContext('2d');
+            
+            const resultChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['躯体化', '强迫症状', '人际关系敏感', '抑郁', '焦虑', '敌对', '恐怖', '偏执', '精神病性'],
+                    datasets: [{
+                        label: '您的得分',
+                        data: [2.20, 2.30, 1.80, 2.50, 2.40, 1.90, 1.50, 1.70, 1.60],
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }, {
+                        label: '正常上限',
+                        data: [1.5, 1.6, 1.7, 1.6, 1.5, 1.5, 1.3, 1.5, 1.6],
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderColor: 'rgba(16, 185, 129, 0.6)',
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', sans-serif"
+                                },
+                                color: '#6B7280'
+                            },
+                            suggestedMin: 1,
+                            suggestedMax: 5,
+                            ticks: {
+                                stepSize: 1,
+                                backdropColor: 'transparent',
+                                color: '#6B7280',
+                                font: {
+                                    size: 10,
+                                    family: "'Inter', sans-serif"
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', sans-serif"
+                                },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 移动端菜单切换
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 按钮事件
+            document.getElementById('restart-test-btn').addEventListener('click', function() {
+                window.location.href = 'index.html#test';
+            });
+            
+            document.getElementById('back-to-home').addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

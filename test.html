@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面跳转</title>
+    <script src="js/app.js"></script>
+</head>
+<body>
+    <h1>测试页面跳转功能</h1>
+    <button onclick="testNavigation()">测试导航功能</button>
+    <div id="result"></div>
+    
+    <script>
+        function testNavigation() {
+            const resultDiv = document.getElementById('result');
+            resultDiv = document.createElement('div');
+            
+            // 模拟DOMContentLoaded事件
+            document.addEventListener('DOMContentLoaded', function() {
+                resultDiv.innerHTML += '<p>DOM已加载</p>';
+            });
+            
+            // 测试App对象是否存在
+            if (typeof App !== 'undefined') {
+                resultDiv.innerHTML += '<p>✓ App对象已定义</p>';
+                
+                // 测试导航功能
+                try {
+                    App.navigateTo('home');
+                    resultDiv.innerHTML += '<p>✓ 导航到首页页成功</p>';
+                    
+                    setTimeout(() => {
+                        App.navigateTo('about');
+                        resultDiv.innerHTML += '<p>✓ 导航到关于页成功</p>';
+                        
+                        setTimeout(() => {
+                            App.navigateTo('my');
+                            resultDiv.innerHTML += '<p>✓ 导航到我的页成功</p>';
+                            
+                            setTimeout(() => {
+                                App.navigateTo('test');
+                                resultDiv.innerHTML += '<p>✓ 导航到测试页成功</p>';
+                            }, 500);
+                        }, 500);
+                    }, 500);
+                } catch (error) {
+                    resultDiv.innerHTML += `<p>✗ 导航失败: ${error.message}</p>`;
+                }
+            } else {
+                resultDiv.innerHTML += '<p>✗ App对象未定义</p>';
+            }
+            
+            resultDiv.appendChild(html);
+        }
+    </script>
+</body>
+</html>

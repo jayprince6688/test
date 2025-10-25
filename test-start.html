@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试开始按钮功能</title>
+    <script src="js/app.js"></script>
+</head>
+<body>
+    <h1>测试开始按钮功能</h1>
+    <div id="result"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultDiv = document.getElementById('result');
+            
+            // 检查App对象是否存在
+            if (typeof App !== 'undefined') {
+                resultDiv.innerHTML += '<p>✓ App对象已定义</p>';
+                
+                // 检查PageController是否初始化
+                if (typeof PageController !== 'undefined') {
+                    resultDiv.innerHTML += '<p>✓ PageController已定义</p>';
+                    
+                    // 检查事件绑定是否成功
+                    if (typeof PageController.bindEvents === 'function') {
+                        resultDiv.innerHTML += '<p>✓ bindEvents方法已正确定义</p>';
+                        
+                        // 模拟点击开始测试按钮
+                        resultDiv.innerHTML += '<p>模拟点击开始测试按钮...</p>';
+                        
+                        // 手动点击事件
+                        const startTestBtn = document.getElementById('start-test-btn');
+                        if (startTestBtn) {
+                            resultDiv.innerHTML += '<p>✓ 找到找到开始测试按钮</p>';
+                            
+                            // 创建自定义事件
+                            const clickEvent = new MouseEvent('click', {
+                                bubbles: true,
+                                cancelable: true,
+                                view: window
+                            });
+                            
+                            // 触发点击事件
+                            startTestBtn.dispatchEvent(clickEvent);
+                            
+                            resultDiv.innerHTML += '<p>✓ 已触发开始测试按钮点击事件</p>';
+                            resultDiv.innerHTML += '<p>✓ 应该导航到测试页面</p>';
+                        } else {
+                            resultDiv.innerHTML += '<p>✗ 未找到开始测试按钮</p>';
+                        }
+                    } else {
+                        resultDiv.innerHTML += '<p>✗ bindEvents方法未定义</p>';
+                    }
+                } else {
+                    resultDiv.innerHTML += '<p>✗ PageController未定义</p>';
+                }
+            } else {
+                resultDiv.innerHTML += '<p>✗ App对象未定义</p>';
+            }
+        });
+    </script>
+</body>
+</html>
