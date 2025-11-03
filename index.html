@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOULTEST - SCL-90心理健康测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        background: '#F9FAFB',
+                        text: '#111827',
+                        light: '#F0F4F8',
+                        card: '#FFFFFF',
+                        'card-hover': '#F9FAFB',
+                        'primary-light': '#E0E7FF',
+                        'secondary-light': '#D1FAE5',
+                        'warning-light': '#FEF3C7',
+                        'danger-light': '#FEE2E2',
+                        muted: '#6B7280'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        '12': '12px',
+                        '16': '16px',
+                        '20': '20px',
+                    },
+                    screens: {
+                        'xs': '360px',    // 小型手机
+                        'sm': '640px',    // 手机
+                        'md': '768px',    // 平板
+                        'lg': '1024px',   // 桌面
+                        'xl': '1280px',   // 大屏桌面
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+            .transition-smooth {
+                transition: all 0.2s ease;
+            }
+            .nav-item-active {
+                @apply text-primary border-b-2 border-primary;
+            }
+            .option-item {
+                @apply border border-gray-200 hover:border-primary rounded-12 p-2 xs:p-2.5 sm:p-3 cursor-pointer transition-smooth;
+            }
+            .option-item.selected {
+                @apply border-primary bg-primary/5;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background font-inter text-text">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-2">
+                    <span class="text-white font-bold">S</span>
+                </div>
+                <h1 class="text-xl font-bold">SOULTEST</h1>
+            </div>
+            
+            <!-- 桌面端导航 -->
+            <nav class="hidden lg:flex items-center space-x-6">
+                <a href="#" id="nav-home" class="nav-item-active py-2 border-b-2 border-primary">首页</a>
+                <a href="#" id="nav-about" class="py-2 text-muted hover:text-primary border-b-2 border-transparent hover:border-primary/30">关于</a>
+                <a href="#" id="nav-test" class="py-2 text-muted hover:text-primary border-b-2 border-transparent hover:border-primary/30">测试</a>
+            </nav>
+            
+            <!-- 移动端端菜单按钮 -->
+            <button id="mobile-menu-button" class="lg:hidden text-muted hover:text-primary">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="lg:hidden bg-white border-t border-gray-100 hidden">
+            <div class="container mx-auto px-4 py-2">
+                <a href="#" id="mobile-nav-home" class="block py-3 px-4 rounded-lg bg-primary/5 text-primary font-medium">首页</a>
+                <a href="#" id="mobile-nav-about" class="block py-3 px-4 rounded-lg hover:bg-light">关于</a>
+                <a href="#" id="mobile-nav-test" class="block py-3 px-4 rounded-lg hover:bg-light">测试</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 - 优化移动端一屏可见 -->
+    <main class="container mx-auto px-3 py-3 min-h-screen-[calc(100vh-120px)]">
+        <!-- 首页 -->
+        <div id="home-page">
+            <!-- 标题区域 - 优化设计 -->
+            <div class="text-center mb-6 pt-12">
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-2">SCL-90 心理健康测试</h1>
+                <p class="text-muted text-sm sm:text-base max-w-sm mx-auto">症状自评量表(SCL-90)是世界上最著名的心理健康测试量表之一，用于90个项目，从多个维度维度评估心理健康状况。</p>
+            </div>
+            
+            <!-- 功能栏目 - 优化布局 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
+                <div class="bg-white rounded-xl p-4 card-shadow flex items-start">
+                    <div class="bg-primary/10 rounded-full p-2.5 mr-3 flex-shrink-0">
+                        <i class="fa fa-check-circle text-primary text-base sm:text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-semibold mb-1">科学量表</h3>
+                        <p class="text-muted text-sm sm:text-base">采用国际通用的SCL-90量表，包含90个问题，涵盖9个维度的心理健康评估。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 card-shadow flex items-start">
+                    <div class="bg-primary/10 rounded-full p-2.5 mr-3 flex-shrink-0">
+                        <i class="fa fa-line-chart text-primary text-base sm:text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-semibold mb-1">详细分析</h3>
+                        <p class="text-muted text-sm sm:text-base">测试完成后，系统将自动为您生成详细的分析报告，包括总分维度得分和专业建议。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 card-shadow flex items-start">
+                    <div class="bg-primary/10 rounded-full p-2.5 mr-3 flex-shrink-0">
+                        <i class="fa fa-lock text-primary text-base sm:text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-semibold mb-1">隐私保障</h3>
+                        <p class="text-muted text-sm sm:text-base">所有测试数据仅存储在您的设备本地，不会上传至服务器，保障您的隐私安全。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 card-shadow flex items-start">
+                    <div class="bg-primary/10 rounded-full p-2.5 mr-3 flex-shrink-0">
+                        <i class="fa fa-mobile text-primary text-base sm:text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-semibold mb-1">三端适配</h3>
+                        <p class="text-muted text-sm sm:text-base">完美支持手机、平板和桌面电脑，随时随地进行心理健康测试。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 开始测试按钮 - 确保在移动端一屏可见 -->
+            <div class="text-center">
+                <button id="start-test-btn" class="bg-primary hover:bg-primary/90 text-white py-3 sm:py-4 px-8 sm:px-10 rounded-2xl font-medium transition-smooth text-base sm:text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 inline-flex items-center">
+                    开始测试
+                    <i class="fa fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 关于页面 -->
+        <div id="about-page" class="hidden">
+            <div class="max-w-3xl mx-auto">
+                <!-- 标题 -->
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold mb-2">关于本测试</h2>
+                    <p class="text-muted">了解SCL-90心理健康测试的相关信息</p>
+                </div>
+                
+                <!-- 网站介绍 -->
+                <div class="bg-white rounded-xl p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">网站介绍</h3>
+                    <p class="text-muted mb-4">SOULTEST是一个专注于心理健康测试的在线平台，致力于为用户提供专业、便捷的心理健康评估服务。我们采用国际通用的心理评估量表，帮助用户提供科学、客观的心理健康评估。</p>
+                    <p class="text-muted">我们的使命是通过科技手段，让心理健康评估更加普及、便捷、科学，帮助更多人关注和关注自己自己的心理健康状况。</p>
+                </div>
+                
+                <!-- 测试简介 -->
+                <div class="bg-white rounded-xl p-6 mb-6">
+                    <h3 class="text-xl font font-semibold mb-4">测试简介</h3>
+                    <p class="text-muted mb-4">症状自评量表(Symptom Checklist 90, SCL-90)是由Derogatis, L. R.于1975年编制的，是目前世界上最著名的心理健康评估量表之一。</p>
+                    <p class="text-muted mb-4">该量表包含90个项目，涵盖了广泛的心理症状，包括躯体化、强迫症状、人际关系敏感、抑郁、焦虑、敌对、恐怖、偏执、精神病性等9个维度。</p>
+                    <p class="text-muted">通过对这些维度的评估，可以全面了解测试者的心理健康状况，为心理健康提供参考。</p>
+                </div>
+                
+                <!-- 评分标准 -->
+                <div class="bg-white rounded-xl p-6 mb-6">
+                    <h3 class="text-xl font font-semibold mb-4">评分标准</h3>
+                    <p class="text-muted mb-4">SCL-90采用5级评分制，每个项目的评分标准如下：</p>
+                    <ul class="list-disc list-inside text-muted space-y-2">
+                        <li><span class="font-medium">从无：</span>自觉无该项症状</li>
+                        <li><span class="font-medium">很轻：</span>自觉有该项症状，但对受检者并无实际影响，或影响轻微</li>
+                        <li><span class="font-medium">中等：</span>自觉有该项症状，对受检者有一定影响</li>
+                        <li><span class="font-medium">偏重：</span>自觉有该项症状，对受检者有相当程度的影响</li>
+                        <li><span class="font-medium">严重：</span>自觉该症状的频度和强度都十分严重，对受检者的影响严重</li>
+                    </ul>
+                </div>
+                
+                <!-- 注意事项 -->
+                <div class="bg-white rounded-xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">注意事项</h3>
+                    <ul class="list-disc list-inside text-muted space-y-2">
+                        <li>本测试仅供参考，不能替代专业的心理咨询或诊断</li>
+                        <li>测试结果仅反映当前的心理状态，随着时间和环境的变化可能会有所不同</li>
+                        <li>请根据您的实际情况如实回答，以获得更准确的评估结果</li>
+                        <li>如果您的测试结果显示存在较严重的心理问题，建议及时寻求专业心理咨询师或医生的帮助</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试页面 -->
+        <div id="test-page" class="hidden">
+            <!-- 三端容器适配 -->
+            <div class="max-w-xs xs:max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto">
+                <!-- 进度条 -->
+                <div class="mb-3 xs:mb-4 sm:mb-5 lg:mb-6">
+                    <div class="flex justify-between text-xs sm:text-sm text-muted mb-2">
+                        <span>第 <span id="current-question">1</span> 题</span>
+                        <span>共 90 题</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-primary rounded-full transition-smooth" style="width: 1%"></div>
+                    </div>
+                </div>
+                
+                <!-- 题目卡片 -->
+                <div class="bg-white rounded-16 p-3 xs:p-4 sm:p-5 lg:p-6 card-shadow">
+                    <h2 id="question-text" class="text-sm xs:text-base sm:text-lg lg:text-xl font-medium mb-3 xs:mb-4 sm:mb-5">题目将在这里显示</h2>
+                    
+                    <!-- 选项 - 三端间距适配 -->
+                    <div class="space-y-1 xs:space-y-1.5 sm:space-y-2 mb-3 xs:mb-4 sm:mb-5">
+                        <div class="option-item" data-score="1">
+                            <div class="flex items-center">
+                                <div class="w-4 xs:w-5 sm:w-6 h-4 xs:h-5 sm:h-6 rounded-full border border-gray-300 flex items-center justify-center mr-2 xs:mr-2.5 sm:mr-3 option-indicator">
+                                    <div class="w-2 xs:w-2.5 sm:w-3 h-2 xs:h-2.5 sm:h-3 rounded-full bg-primary hidden option-check"></div>
+                                </div>
+                                <span class="text-xs xs:text-sm sm:text-base">从无</span>
+                            </div>
+                        </div>
+                        <div class="option-item" data-score="2">
+                            <div class="flex items-center">
+                                <div class="w-4 xs:w-5 sm:w-6 h-4 xs:h-5 sm:h-6 rounded-full border border-gray-300 flex items-center justify-center mr-2 xs:mr-2.5 sm:mr-3 option-indicator">
+                                    <div class="w-2 xs:w-2.5 sm:w-3 h-2 xs:h-2.5 sm:h-3 rounded-full bg-primary hidden option-check"></div>
+                                </div>
+                                <span class="text-xs xs:text-sm sm:text-base">很轻</span>
+                            </div>
+                        </div>
+                        <div class="option-item" data-score="3">
+                            <div class="flex items-center">
+                                <div class="w-4 xs:w-5 sm:w-6 h-4 xs:h-5 sm:h-6 rounded-full border border-gray-300 flex items-center justify-center mr-2 xs:mr-2.5 sm:mr-3 option-indicator">
+                                    <div class="w-2 xs:w-2.5 sm:w-3 h-2 xs:h-2.5 sm:h-3 rounded-full bg-primary hidden option-check"></div>
+                                </div>
+                                <span class="text-xs xs:text-sm sm:text-base">中等</span>
+                            </div>
+                        </div>
+                        <div class="option-item" data-score="4">
+                            <div class="flex items-center">
+                                <div class="w-4 xs:w-5 sm:w-6 h-4 xs:h-5 sm:h-6 rounded-full border border-gray-300 flex items-center justify-center mr-2 xs:mr-2.5 sm:mr-3 option-indicator">
+                                    <div class="w-2 xs:w-2.5 sm:w-3 h-2 xs:h-2.5 sm:h-3 rounded-full bg-primary hidden option-check"></div>
+                                </div>
+                                <span class="text-xs xs:text-sm sm:text-base">偏重</span>
+                            </div>
+                        </div>
+                        <div class="option-item" data-score="5">
+                            <div class="flex items-center">
+                                <div class="w-4 xs:w-5 sm:w-6 h-4 xs:h-5 sm:h-6 rounded-full border border-gray-300 flex items-center justify-center mr-2 xs:mr-2.5 sm:mr-3 option-indicator">
+                                    <div class="w-2 xs:w-2.5 sm:w-3 h-2 xs:h-2.5 sm:h-3 rounded-full bg-primary hidden option-check"></div>
+                                </div>
+                                <span class="text-xs xs:text-sm sm:text-base">严重</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示 -->
+                    <div class="text-xs sm:text-sm text-muted text-center mb-2 sm:mb-0">
+                        选择后将自动跳转到下一题（最后一题除外）
+                    </div>
+                </div>
+                
+                <!-- 按钮 -->
+                <div class="flex justify-between mt-3 xs:mt-4 sm:mt-5 lg:mt-6">
+                    <button id="prev-btn" class="bg-light hover:bg-light/80 text-text py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 rounded-12 font-medium transition-smooth disabled:opacity-50 disabled:cursor-not-allowed text-xs" disabled>
+                        <i class="fa fa-arrow-left mr-1"></i> 上一题
+                    </button>
+                    <button id="next-btn" class="bg-primary/20 text-primary py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 rounded-12 font-medium transition-smooth text-xs" disabled>
+                        下一题
+                        <i class="fa fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 结果页面 -->
+        <div id="result-page" class="hidden">
+            <!-- 三端容器适配 -->
+            <div class="max-w-xs xs:max-w-sm sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
+                <div class="text-center my-3 xs:my-4 sm:my-6">
+                    <div class="flex items-center justify-center mb-2 xs:mb-3 sm:mb-4">
+                        <div class="w-8 xs:w-10 sm:w-12 h-8 xs:w-10 sm:h-12 bg-secondary/10 rounded-full flex items-center justify-center mr-2 xs:mr-3 sm:mr-4">
+                            <i class="fa fa-check text-base xs:text-lg sm:text-xl text-secondary"></i>
+                        </div>
+                        <h2 class="text-xl xs:text-2xl sm:text-3xl font-bold">测试完成！</h2>
+                    </div>
+                    <p class="text-muted text-sm xs:text-base">您已完成SCL-90心理健康测试</p>
+                    <p class="text-xs text-muted mt-2">测试时间：<span id="test-date">--</span></p>
+                </div>
+                
+                <!-- 总体评估 -->
+                <div class="bg-white rounded-xl p-4 xs:p-5 sm:p-6 card-shadow mb-3 xs:mb-4 sm:mb-6">
+                    <h3 class="text-base xs:text-lg sm:text-xl font-semibold mb-3 xs:mb-4">总体评估</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 xs:gap-4">
+                        <div class="bg-card rounded-xl p-3 xs:p-4 text-center shadow-sm">
+                            <p class="text-xs xs:text-sm text-muted mb-1">总分</p>
+                            <p id="total-score" class="text-lg xs:text-xl sm:text-2xl font-bold">--</p>
+                            <p class="text-[10px] text-muted mt-1">参考范围：1-450分</p>
+                            <p class="text-[10px] text-muted" id="total-score-interpretation">--</p>
+                        </div>
+                        <div class="bg-card rounded-xl p-3 xs:p-4 text-center shadow-sm">
+                            <p class="text-xs xs:text-sm text-muted mb-1">阳性项目数</p>
+                            <p id="positive-count" class="text-lg xs:text-xl sm:text-2xl font-bold">--</p>
+                            <p class="text-[10px] text-muted mt-1">参考范围：0-90项</p>
+                            <p class="text-[10px] text-muted" id="positive-count-interpretation">--</p>
+                        </div>
+                        <div class="bg-card rounded-xl p-3 xs:p-4 text-center shadow-sm">
+                            <p class="text-xs xs:text-sm text-muted mb-1">总均分</p>
+                            <p id="total-index" class="text-lg xs:text-xl sm:text-2xl font-bold">--</p>
+                            <p class="text-[10px] text-muted mt-1">参考范围：1-5分</p>
+                            <p class="text-[10px] text-muted" id="total-index-interpretation">--</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 xs:mt-4">
+                        <p class="text-sm xs:text-base font-medium mb-1">总体评价</p>
+                        <div id="overall-assessment" class="text-sm bg-card p-3 rounded-lg shadow-sm">--</div>
+                    </div>
+                </div>
+                
+                <!-- 因子得分 -->
+                <div class="bg-white rounded-xl p-4 xs:p-5 sm:p-6 card-shadow mb-3 xs:mb-4 sm:mb-6">
+                    <h3 class="text-base xs:text-lg sm:text-xl font-semibold mb-3 xs:mb-4">因子得分分析</h3>
+                    <p class="text-xs text-muted mb-3">SCL-90包含9个因子，分别反映不同方面的心理症状情况。因子分越高，表明该方面的症状越明显。</p>
+                    
+                    <!-- 因子得分图表（移动端隐藏） -->
+                    <div class="hidden sm:block mb-4">
+                        <canvas id="factors-chart" height="250"></canvas>
+                    </div>
+                    
+                    <!-- 因子得分详情 -->
+                    <div id="factors-container" class="space-y-3 xs:space-y-4">
+                        <!-- 因子得分将在这里动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 症状分布 -->
+                <div class="bg-white rounded-xl p-4 xs:p-5 sm:p-6 card-shadow mb-3 xs:mb-4 sm:mb-6">
+                    <h3 class="text-base xs:text-lg sm:text-xl font-semibold mb-3 xs:mb-4">症状分布</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="bg-card rounded-xl p-3 xs:p-4 shadow-sm">
+                            <h4 class="text-sm font-medium mb-2">阳性症状分布</h4>
+                            <div id="symptom-distribution" class="space-y-2">
+                                <!-- 症状分布将在这里动态生成 -->
+                            </div>
+                        </div>
+                        <div class="bg-card rounded-xl p-3 xs:p-4 shadow-sm">
+                            <h4 class="text-sm font-medium mb-2">症状严重程度分布</h4>
+                            <div id="severity-distribution" class="space-y-2">
+                                <!-- 严重程度分布将在这里动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 专业建议 -->
+                <div class="bg-white rounded-xl p-4 xs:p-5 sm:p-6 card-shadow mb-3 xs:mb-4 sm:mb-6">
+                    <h3 class="text-base xs:text-lg sm:text-xl font-semibold mb-3 xs:mb-4">专业建议</h3>
+                    <div id="professional-advice" class="text-sm space-y-3">--</div>
+                    
+                    <!-- 分级建议 -->
+                    <div class="mt-4 p-3 bg-card rounded-lg shadow-sm">
+                        <h4 class="text-sm font-medium mb-2">分级建议</h4>
+                        <div id="level-based-advice" class="text-sm space-y-2">--</div>
+                    </div>
+                </div>
+                
+                <!-- 按钮 -->
+                <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+                    <button id="restart-btn" class="bg-primary hover:bg-primary/90 text-white py-2.5 xs:py-3 px-6 rounded-xl font-medium transition-smooth text-sm">
+                        重新测试
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 资源页面 -->
+        <div id="resource-page" class="hidden">
+            <!-- 三端容器适配 -->
+            <div class="max-w-xs xs:max-w-sm sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
+                <div class="flex items-center mb-4 xs:mb-6">
+                    <button id="back-to-result-btn" class="mr-3 text-muted hover:text-primary">
+                        <i class="fa fa-arrow-left text-lg"></i>
+                    </button>
+                    <h2 class="text-xl xs:text-2xl font-bold">心理健康资源</h2>
+                </div>
+                
+                <!-- 资源卡片 -->
+                <div class="bg-white rounded-xl p-4 xs:p-5 sm:p-6 card-shadow mb-3 xs:mb-4 sm:mb-6">
+                    <h3 class="text-base xs:text-lg sm:text-xl font-semibold mb-3 xs:mb-4">自助资源</h3>
+                    <div class="space-y-3 xs:space-y-4">
+                        <a href="#" class="block p-3 xs:p-4 bg-light rounded-xl hover:bg-light/80 transition-smooth">
+                            <div class="flex items-center">
+                                <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                    <i class="fa fa-book text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">心理健康书籍推荐</h4>
+                                    <p class="text-sm text-muted">精选有助于心理健康的书籍列表</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="block p-3 xs:p-4 bg-light rounded-xl hover:bg-light/80 transition-smooth">
+                            <div class="flex items-center">
+                                <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                    <i class="fa fa-headphones text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">冥想与放松指导</h4>
+                                    <p class="text-sm text-muted">帮助您缓解压力的冥想练习</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="block p-3 xs:p-4 bg-light rounded-xl hover:bg-light/80 transition-smooth">
+                            <div class="flex items-center">
+                                <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                    <i class="fa fa-video-camera text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">心理健康视频课程</h4>
+                                    <p class="text-sm text-muted">专业的心理健康知识与技能培训</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 专业帮助 -->
+                <div class="bg-white rounded-xl p-4 xs:p-5 sm:p-6 card-shadow">
+                    <h3 class="text-base xs:text-lg sm:text-xl font-semibold mb-3 xs:mb-4">专业帮助</h3>
+                    <p class="text-muted text-sm xs:text-base mb-3 xs:mb-4">如果您需要专业的心理帮助，可以考虑以下途径：</p>
+                    <div class="space-y-3 xs:space-y-4">
+                        <div class="p-3 xs:p-4 bg-light rounded-xl">
+                            <h4 class="font-medium">心理咨询热线</h4>
+                            <p class="text-sm text-muted">全国心理危机干预热线：400-161-9995</p>
+                            <p class="text-sm text-muted">北京心理援助热线：010-82951332</p>
+                        </div>
+                        <div class="p-3 xs:p-4 bg-light rounded-xl">
+                            <h4 class="font-medium">在线心理咨询平台</h4>
+                            <p class="text-sm text-muted">壹心理：https://www.xinli001.com</p>
+                            <p class="text-sm text-muted">简单心理：https://www.jiandanxinli.com</p>
+                        </div>
+                        <div class="p-3 xs:p-4 bg-light rounded-xl">
+                            <h4 class="font-medium">医院心理科</h4>
+                            <p class="text-sm text-muted">建议前往当地三甲医院心理科或精神科就诊</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页面底部重要提示 -->
+    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 my-6 rounded-lg max-w-4xl mx-auto px-4 xs:px-4 sm:px-6 md:px-6 lg:px-8">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fa fa-exclamation-triangle text-amber-400"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-amber-700">
+                    <strong>重要提示：</strong>本测试仅供参考，不能替代专业的心理咨询或诊断。如果您的测试结果显示存在较严重的心理问题，建议及时寻求专业心理咨询师或医生的帮助。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏（移动端） -->
+    <footer class="lg:hidden bg-white border-t border-gray-100 py-2 fixed bottom-0 left-0 right-0 z-40">
+        <div class="flex justify-around">
+            <button class="nav-btn flex flex-col items-center py-2 px-4 text-primary" data-target="home-page">
+                <i class="fa fa-home text-lg"></i>
+                <span class="text-xs mt-1">首页</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center py-2 px-4 text-muted" data-target="about-page">
+                <i class="fa fa-info-circle text-lg"></i>
+                <span class="text-xs mt-1">关于</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center py-2 px-4 text-muted" data-target="result-page" id="my-button">
+                <i class="fa fa-user text-lg"></i>
+                <span class="text-xs mt-1">我的</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-gray-100 py-2">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center mb-1">
+                <div class="w-5 h-5 bg-primary rounded-full flex items-center justify-center mr-1">
+                    <span class="text-white text-[10px] font-bold">S</span>
+                </div>
+                <h2 class="text-base font-bold">SOULTEST</h2>
+            </div>
+            <p class="text-muted text-[10px]">© 2025 SOULTEST. 保留所有权利。</p>
+            <!-- 社交媒体图标已移除 -->
+        </div>
+    </footer>
+
+    <script>
+        // SCL-90 题目数据
+        const questions = [
+            // 躯体化 (12项) - 因子0
+            { text: "头痛", factor: 0 },
+            { text: "神经过敏，心中不踏实", factor: 0 },
+            { text: "头脑中有不必要的想法或字句盘旋", factor: 0 },
+            { text: "头晕或晕倒", factor: 0 },
+            { text: "对异性的兴趣减退", factor: 0 },
+            { text: "对旁人求全责备", factor: 0 },
+            { text: "感到别人能控制您的思想", factor: 0 },
+            { text: "责怪别人制造麻烦", factor: 0 },
+            { text: "忘记性大", factor: 0 },
+            { text: "担心自己的衣饰整齐及仪态的端正", factor: 0 },
+            { text: "容易烦恼和激动", factor: 0 },
+            { text: "胸痛", factor: 0 },
+            
+            // 强迫症状 (10项) - 因子1
+            { text: "害怕空旷的场所或街道", factor: 1 },
+            { text: "感到自己的精力下降，活动减慢", factor: 1 },
+            { text: "想结束自己的生命", factor: 1 },
+            { text: "听到旁人听不到的声音", factor: 1 },
+            { text: "发抖", factor: 1 },
+            { text: "感到大多数人都不可信任", factor: 1 },
+            { text: "胃口不好", factor: 1 },
+            { text: "容易哭泣", factor: 1 },
+            { text: "同异性相处时感到害羞不自在", factor: 1 },
+            { text: "感到受骗，中了圈套或有人想抓住您", factor: 1 },
+            
+            // 人际关系敏感 (9项) - 因子2
+            { text: "无缘无故地突然感到害怕", factor: 2 },
+            { text: "自己不能控制地大发脾气", factor: 2 },
+            { text: "怕单独出门", factor: 2 },
+            { text: "经常责怪自己", factor: 2 },
+            { text: "腰痛", factor: 2 },
+            { text: "感到难以完成任务", factor: 2 },
+            { text: "感到孤独", factor: 2 },
+            { text: "感到苦闷", factor: 2 },
+            { text: "过分担忧", factor: 2 },
+            
+            // 抑郁 (13项) - 因子3
+            { text: "对事物不感兴趣", factor: 3 },
+            { text: "感到害怕", factor: 3 },
+            { text: "您的感情容易受到伤害", factor: 3 },
+            { text: "旁人能知道您的私下想法", factor: 3 },
+            { text: "感到别人不理解您、不同情您", factor: 3 },
+            { text: "感到人们对您不友好、不喜欢您", factor: 3 },
+            { text: "做事必须做得很慢以保证做得正确", factor: 3 },
+            { text: "心跳得很厉害", factor: 3 },
+            { text: "恶心或胃部不舒服", factor: 3 },
+            { text: "感到比不上他人", factor: 3 },
+            { text: "肌肉酸痛", factor: 3 },
+            { text: "感到有人在监视您、谈论您", factor: 3 },
+            { text: "难以入睡", factor: 3 },
+            
+            // 焦虑 (10项) - 因子4
+            { text: "做事必须反复检查", factor: 4 },
+            { text: "难以做出决定", factor: 4 },
+            { text: "怕乘电车、公共汽车、地铁或火车", factor: 4 },
+            { text: "呼吸有困难", factor: 4 },
+            { text: "一阵阵发冷或发热", factor: 4 },
+            { text: "因为感到害怕而避开某些东西、场合或活动", factor: 4 },
+            { text: "脑子变空了", factor: 4 },
+            { text: "身体发麻或刺痛", factor: 4 },
+            { text: "喉咙有梗塞感", factor: 4 },
+            { text: "感到前途没有希望", factor: 4 },
+            
+            // 敌对 (6项) - 因子5
+            { text: "不能集中注意力", factor: 5 },
+            { text: "感到身体的某一部分软弱无力", factor: 5 },
+            { text: "感到紧张或容易紧张", factor: 5 },
+            { text: "感到手或脚发重", factor: 5 },
+            { text: "想到死亡的事", factor: 5 },
+            { text: "吃得太多", factor: 5 },
+            
+            // 恐怖 (7项) - 因子6
+            { text: "当别人看着您或谈论您时感到不自在", factor: 6 },
+            { text: "有一些不属于您自己的想法", factor: 6 },
+            { text: "有想打人或伤害他人的冲动", factor: 6 },
+            { text: "醒得太早", factor: 6 },
+            { text: "必须反复洗手、点数目或触摸某些东西", factor: 6 },
+            { text: "睡得不稳不深", factor: 6 },
+            { text: "有想摔坏或破坏东西的冲动", factor: 6 },
+            
+            // 偏执 (6项) - 因子7
+            { text: "有一些别人没有的想法或念头", factor: 7 },
+            { text: "感到对别人神经过敏", factor: 7 },
+            { text: "在商店或电影院等人多的地方感到不自在", factor: 7 },
+            { text: "感到任何事情都很困难", factor: 7 },
+            { text: "一阵阵恐惧或惊恐", factor: 7 },
+            { text: "感到在公共场合吃东西很不舒服", factor: 7 },
+            
+            // 精神病性 (10项) - 因子8
+            { text: "经常与人争论", factor: 8 },
+            { text: "单独一人时神经很紧张", factor: 8 },
+            { text: "别人对您的成绩没有做出恰当的评价", factor: 8 },
+            { text: "即使和别人在一起也感到孤单", factor: 8 },
+            { text: "感到坐立不安、心神不定", factor: 8 },
+            { text: "感到自己没有什么价值", factor: 8 },
+            { text: "感到熟悉的东西变成陌生或不像是真的", factor: 8 },
+            { text: "大叫或摔东西", factor: 8 },
+            { text: "害怕会在公共场合晕倒", factor: 8 },
+            { text: "感到别人想占您的便宜", factor: 8 },
+            
+            // 其他 (7项) - 因子9
+            { text: "为一些有关性的想法而很苦恼", factor: 9 },
+            { text: "您认为应该因为自己的过错而受到惩罚", factor: 9 },
+            { text: "感到要赶快把事情做完", factor: 9 },
+            { text: "感到自己的身体有严重问题", factor: 9 },
+            { text: "从未感到和其他人很亲近", factor: 9 },
+            { text: "感到自己有罪", factor: 9 },
+            { text: "感到自己的脑子有毛病", factor: 9 }
+        ];
+
+        // 因子名称
+        const factorNames = [
+            "躯体化", "强迫症状", "人际关系敏感", "抑郁", "焦虑",
+            "敌对", "恐怖", "偏执", "精神病性", "其他"
+        ];
+        
+        // 因子题目数量
+        const factorCounts = [12, 10, 9, 13, 10, 6, 7, 6, 10, 7];
+
+        // DOM 元素
+        const elements = {
+            // 页面容器
+            homePage: document.getElementById('home-page'),
+            aboutPage: document.getElementById('about-page'),
+            testPage: document.getElementById('test-page'),
+            resultPage: document.getElementById('result-page'),
+            resourcePage: document.getElementById('resource-page'),
+            
+            // 导航元素
+            navHome: document.getElementById('nav-home'),
+            navAbout: document.getElementById('nav-about'),
+            navTest: document.getElementById('nav-test'),
+            mobileMenuButton: document.getElementById('mobile-menu-button'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            mobileNavHome: document.getElementById('mobile-nav-home'),
+            mobileNavAbout: document.getElementById('mobile-nav-about'),
+            mobileNavTest: document.getElementById('mobile-nav-test'),
+            
+            // 首页元素
+            startTestBtn: document.getElementById('start-test-btn'),
+            
+            // 测试页元素
+            questionText: document.getElementById('question-text'),
+            currentQuestion: document.getElementById('current-question'),
+            progressBar: document.getElementById('progress-bar'),
+            optionItems: document.querySelectorAll('.option-item'),
+            prevBtn: document.getElementById('prev-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            
+            // 结果页元素
+            totalScore: document.getElementById('total-score'),
+            positiveCount: document.getElementById('positive-count'),
+            totalIndex: document.getElementById('total-index'),
+            overallAssessment: document.getElementById('overall-assessment'),
+            factorsContainer: document.getElementById('factors-container'),
+            professionalAdvice: document.getElementById('professional-advice'),
+            restartBtn: document.getElementById('restart-btn'),
+            
+            // 资源页元素
+            backToResultBtn: document.getElementById('back-to-result-btn')
+        };
+
+        // 应用状态
+        const appState = {
+            currentPage: 'home',
+            currentQuestionIndex: 0,
+            answers: [],
+            results: null
+        };
+
+        // 初始化应用
+        function initApp() {
+            console.log('应用开始初始化');
+            
+            // 从本地存储加载状态
+            loadState();
+            console.log('状态已从本地存储加载');
+            console.log('当前页面:', appState.currentPage);
+            console.log('当前问题索引:', appState.currentQuestionIndex);
+            console.log('答案数组长度:', appState.answers.length);
+            
+            // 绑定事件监听器
+            bindEvents();
+            console.log('事件监听器已绑定');
+            
+            // 显示当前页面
+            showPage(appState.currentPage);
+            console.log('已显示当前页面:', appState.currentPage);
+        }
+
+        // 绑定事件监听器
+        function bindEvents() {
+            // 导航事件
+            elements.navHome.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home');
+            });
+            
+            elements.navAbout.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('about');
+            });
+            
+            elements.navTest.addEventListener('click', (e) => {
+                e.preventDefault();
+                // 检查是否有未完成的测试（至少有一个答案被填写）
+                if (appState.answers && appState.answers.some(answer => answer !== null)) {
+                    showPage('test');
+                } else {
+                    startTest();
+                }
+            });
+            
+            // 移动端导航事件
+            elements.mobileMenuButton.addEventListener('click', toggleMobileMenu);
+            
+            elements.mobileNavHome.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleMobileMenu();
+                showPage('home');
+            });
+            
+            elements.mobileNavAbout.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleMobileMenu();
+                showPage('about');
+            });
+            
+            elements.mobileNavTest.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleMobileMenu();
+                // 检查是否有未完成的测试（至少有一个答案被填写）
+                if (appState.answers && appState.answers.some(answer => answer !== null)) {
+                    showPage('test');
+                } else {
+                    startTest();
+                }
+            });
+            
+            // 首页事件
+            if (elements.startTestBtn) {
+                elements.startTestBtn.addEventListener('click', startTest);
+                console.log('开始测试按钮事件已绑定');
+            } else {
+                console.error('未找到开始测试按钮元素');
+            }
+            
+            // 测试页事件
+            elements.optionItems.forEach(option => {
+                option.addEventListener('click', handleOptionSelect);
+            });
+            
+            elements.prevBtn.addEventListener('click', goToPrevQuestion);
+            elements.nextBtn.addEventListener('click', goToNextQuestion);
+            
+            // 结果页事件
+            elements.restartBtn.addEventListener('click', restartTest);
+            
+            // 资源页事件
+            elements.backToResultBtn.addEventListener('click', () => showPage('result'));
+            
+            // 窗口大小变化时处理
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) {
+                    elements.mobileMenu.classList.add('hidden');
+                }
+            });
+            
+            // 底部导航栏点击事件
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetPageId = this.getAttribute('data-target');
+                    
+                    // 更新导航栏样式
+                    document.querySelectorAll('.nav-btn').forEach(navBtn => {
+                        navBtn.classList.remove('text-primary');
+                        navBtn.classList.add('text-muted');
+                    });
+                    this.classList.remove('text-muted');
+                    this.classList.add('text-primary');
+                    
+                    // 切换页面
+                    if (targetPageId === 'home-page') {
+                        showPage('home');
+                    } else if (targetPageId === 'about-page') {
+                        showPage('about');
+                    } else if (targetPageId === 'result-page') {
+                        if (appState.results) {
+                            showPage('result');
+                        } else {
+                            // 如果没有测试结果，显示提示但不切换页面
+                            alert('您还没有完成测试，请先完成测试');
+                        }
+                    }
+                });
+            });
+        }
+
+        // 切换移动端菜单
+        function toggleMobileMenu() {
+            elements.mobileMenu.classList.toggle('hidden');
+        }
+
+        // 更新导航状态
+        function updateNavState(pageName) {
+            // 重置所有导航项
+            [elements.navHome, elements.navAbout, elements.navTest].forEach(item => {
+                item.classList.remove('nav-item-active');
+                item.classList.add('text-muted', 'hover:text-primary', 'border-transparent', 'hover:border-primary/30');
+            });
+            
+            [elements.mobileNavHome, elements.mobileNavAbout, elements.mobileNavTest].forEach(item => {
+                item.classList.remove('nav-item-active');
+                item.classList.add('text-muted', 'hover:text-primary', 'hover:bg-light');
+            });
+            
+            // 设置当前页面导航项
+            switch(pageName) {
+                case 'home':
+                    elements.navHome.classList.add('nav-item-active');
+                    elements.navHome.classList.remove('text-muted', 'hover:text-primary', 'border-transparent', 'hover:border-primary/30');
+                    elements.mobileNavHome.classList.add('nav-item-active');
+                    elements.mobileNavHome.classList.remove('text-muted', 'hover:text-primary', 'hover:bg-light');
+                    break;
+                case 'about':
+                    elements.navAbout.classList.add('nav-item-active');
+                    elements.navAbout.classList.remove('text-muted', 'hover:text-primary', 'border-transparent', 'hover:border-primary/30');
+                    elements.mobileNavAbout.classList.add('nav-item-active');
+                    elements.mobileNavAbout.classList.remove('text-muted', 'hover:text-primary', 'hover:bg-light');
+                    break;
+                case 'test':
+                case 'result':
+                case 'resource':
+                    elements.navTest.classList.add('nav-item-active');
+                    elements.navTest.classList.remove('text-muted', 'hover:text-primary', 'border-transparent', 'hover:border-primary/30');
+                    elements.mobileNavTest.classList.add('nav-item-active');
+                    elements.mobileNavTest.classList.remove('text-muted', 'hover:text-primary', 'hover:bg-light');
+                    break;
+            }
+        }
+
+        // 显示指定页面
+        function showPage(pageName) {
+            console.log('showPage函数被调用，页面名称:', pageName);
+            
+            // 隐藏所有页面
+            elements.homePage.classList.add('hidden');
+            elements.aboutPage.classList.add('hidden');
+            elements.testPage.classList.add('hidden');
+            elements.resultPage.classList.add('hidden');
+            elements.resourcePage.classList.add('hidden');
+            
+            console.log('所有页面已隐藏');
+            
+            // 显示目标页面
+            switch(pageName) {
+                case 'home':
+                    elements.homePage.classList.remove('hidden');
+                    console.log('已显示首页');
+                    break;
+                case 'about':
+                    elements.aboutPage.classList.remove('hidden');
+                    console.log('已显示关于页面');
+                    break;
+                case 'test':
+                    elements.testPage.classList.remove('hidden');
+                    console.log('已显示测试页面');
+                    
+                    // 确保当前问题索引有效
+                    if (appState.currentQuestionIndex >= 0 && appState.currentQuestionIndex < questions.length) {
+                        loadCurrentQuestion();
+                        console.log('已调用loadCurrentQuestion()');
+                    } else {
+                        // 如果索引无效，重新开始测试
+                        console.error('无效的问题索引:', appState.currentQuestionIndex);
+                        startTest();
+                    }
+                    break;
+                case 'result':
+                    elements.resultPage.classList.remove('hidden');
+                    console.log('已显示结果页面');
+                    
+                    if (!appState.results) {
+                        calculateResults();
+                        console.log('已调用calculateResults()');
+                    }
+                    displayResults();
+                    console.log('已调用displayResults()');
+                    break;
+                case 'resource':
+                    elements.resourcePage.classList.remove('hidden');
+                    console.log('已显示资源页面');
+                    break;
+            }
+            
+            // 更新导航状态
+            updateNavState(pageName);
+            console.log('已更新导航状态');
+            
+            // 更新当前页面状态
+            appState.currentPage = pageName;
+            saveState();
+            console.log('已保存页面状态到本地存储');
+            
+        }
+
+        // 开始测试
+        function startTest() {
+            console.log('startTest函数被调用');
+            console.log('questions数组长度:', questions.length);
+            
+            appState.currentQuestionIndex = 0;
+            appState.answers = Array(questions.length).fill(null);
+            appState.results = null;
+            
+            console.log('测试状态初始化完成');
+            console.log('当前问题索引:', appState.currentQuestionIndex);
+            console.log('答案数组长度:', appState.answers.length);
+            
+            saveState();
+            console.log('状态已保存到本地存储');
+            
+            showPage('test');
+            console.log('已调用showPage("test")');
+        }
+
+        // 重新测试
+        function restartTest() {
+            startTest();
+        }
+
+        // 加载当前题目
+        function loadCurrentQuestion() {
+            console.log('loadCurrentQuestion函数被调用');
+            console.log('当前问题索引:', appState.currentQuestionIndex);
+            console.log('questions数组长度:', questions.length);
+            
+            // 添加安全检查
+            if (appState.currentQuestionIndex === undefined || appState.currentQuestionIndex < 0 || appState.currentQuestionIndex >= questions.length) {
+                console.error('无效的问题索引:', appState.currentQuestionIndex);
+                startTest(); // 重新开始测试
+                return;
+            }
+            
+            console.log('问题索引有效，继续加载问题');
+            
+            const question = questions[appState.currentQuestionIndex];
+            console.log('当前问题:', question);
+            
+            elements.questionText.textContent = question.text;
+            elements.currentQuestion.textContent = appState.currentQuestionIndex + 1;
+            
+            // 更新进度条
+            const progress = ((appState.currentQuestionIndex + 1) / questions.length) * 100;
+            elements.progressBar.style.width = `${progress}%`;
+            console.log('进度条已更新为:', progress + '%');
+            
+            // 更新选项状态
+            resetOptions();
+            console.log('选项状态已重置');
+            
+            // 如果有答案，显示已选选项
+            const currentAnswer = appState.answers[appState.currentQuestionIndex];
+            if (currentAnswer !== null) {
+                console.log('当前问题已有答案:', currentAnswer);
+                elements.optionItems.forEach(option => {
+                    if (parseInt(option.dataset.score) === currentAnswer) {
+                        selectOption(option);
+                    }
+                });
+            }
+            
+            // 更新按钮状态
+            updateNavButtons();
+            console.log('按钮状态已更新');
+            console.log('问题加载完成');
+        }
+
+        // 重置选项状态
+        function resetOptions() {
+            elements.optionItems.forEach(option => {
+                option.classList.remove('border-primary', 'bg-primary/5');
+                option.querySelector('.option-check').classList.add('hidden');
+                option.querySelector('.option-indicator').classList.remove('border-primary');
+            });
+            
+            elements.nextBtn.disabled = true;
+            elements.nextBtn.classList.add('bg-primary/20');
+            elements.nextBtn.classList.remove('bg-primary', 'hover:bg-primary/90');
+        }
+
+        // 选择选项
+        function selectOption(option) {
+            // 重置所有选项
+            resetOptions();
+            
+            // 设置选中状态
+            option.classList.add('border-primary', 'bg-primary/5');
+            option.querySelector('.option-check').classList.remove('hidden');
+            option.querySelector('.option-indicator').classList.add('border-primary');
+            
+            // 启用下一题按钮
+            elements.nextBtn.disabled = false;
+            elements.nextBtn.classList.remove('bg-primary/20');
+            elements.nextBtn.classList.add('bg-primary', 'hover:bg-primary/90');
+            
+            // 保存答案
+            const score = parseInt(option.dataset.score);
+            appState.answers[appState.currentQuestionIndex] = score;
+            saveState();
+        }
+
+        // 处理选项选择
+        function handleOptionSelect(e) {
+            selectOption(e.currentTarget);
+            
+            // 如果不是最后一题，自动跳转下一题
+            if (appState.currentQuestionIndex < questions.length - 1) {
+                setTimeout(goToNextQuestion, 500);
+            }
+        }
+
+        // 更新导航按钮状态
+        function updateNavButtons() {
+            // 上一题按钮
+            elements.prevBtn.disabled = appState.currentQuestionIndex === 0;
+            
+            // 下一题按钮
+            elements.nextBtn.disabled = appState.answers[appState.currentQuestionIndex] === null;
+            
+            // 根据是否是最后一题更新按钮文本和样式
+            if (appState.currentQuestionIndex === questions.length - 1) {
+                elements.nextBtn.innerHTML = '提交';
+                // 为提交按钮添加特殊样式使其更明显
+                if (!elements.nextBtn.disabled) {
+                    elements.nextBtn.className = 'bg-secondary hover:bg-secondary/90 text-white font-semibold py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 rounded-12 transition-smooth text-xs';
+                } else {
+                    elements.nextBtn.className = 'bg-secondary/20 text-secondary py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 rounded-12 font-medium transition-smooth text-xs';
+                }
+            } else {
+                elements.nextBtn.innerHTML = '下一题<i class="fa fa-arrow-right ml-1"></i>';
+                // 恢复普通下一题按钮样式
+                if (!elements.nextBtn.disabled) {
+                    elements.nextBtn.className = 'bg-primary hover:bg-primary/90 text-white py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 rounded-12 font-medium transition-smooth text-xs';
+                } else {
+                    elements.nextBtn.className = 'bg-primary/20 text-primary py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 rounded-12 font-medium transition transition-smooth text-xs';
+                }
+            }
+        }
+
+        // 前往上一题
+        function goToPrevQuestion() {
+            if (appState.currentQuestionIndex > 0) {
+                appState.currentQuestionIndex--;
+                saveState();
+                loadCurrentQuestion();
+            }
+        }
+
+        // 前往下一题
+        function goToNextQuestion() {
+            if (appState.answers[appState.currentQuestionIndex] !== null) {
+                if (appState.currentQuestionIndex < questions.length - 1) {
+                    appState.currentQuestionIndex++;
+                    saveState();
+                    loadCurrentQuestion();
+                } else {
+                    // 完成所有题目，显示结果
+                    showPage('result');
+                }
+            }
+        }
+
+        // 计算测试结果
+        function calculateResults() {
+            // 总分
+            const totalScore = appState.answers.reduce((sum, score) => sum + score, 0);
+            
+            // 阳性项目数（得分≥2）
+            const positiveCount = appState.answers.filter(score => score >= 2).length;
+            
+            // 总均分
+            const totalIndex = totalScore / questions.length;
+            
+            // 阳性症状均分
+            const positiveIndex = positiveCount > 0 ? 
+                appState.answers.filter(score => score >= 2).reduce((sum, score) => sum + score, 0) / positiveCount : 0;
+            
+            // 因子分
+            const factorScores = Array(10).fill(0);
+            
+            // 计算每个因子的总分
+            questions.forEach((question, index) => {
+                const factor = question.factor;
+                factorScores[factor] += appState.answers[index];
+            });
+            
+            // 计算每个因子的均分
+            const factorIndexes = factorScores.map((score, index) => {
+                const count = factorCounts[index];
+                return score / count;
+            });
+            
+            // 因子解释
+            const factorInterpretations = [
+                "反映身体上的不适症状，如头痛、头晕、胸痛等。得分高可能提示存在躯体化症状。",
+                "反映反复出现的、不必要的想法或行为，如反复检查、洗手等。得分高可能提示存在强迫症倾向。",
+                "反映在人际交往中的敏感、不自在和自卑感。得分高可能提示存在人际关系问题。",
+                "反映抑郁情绪，如兴趣减退、感到孤独、绝望等。得分高可能提示存在抑郁症状。",
+                "反映焦虑情绪，如紧张、恐惧、坐立不安等。得分高可能提示存在焦虑症状。",
+                "反映敌对情绪和行为，如容易激动、想打人或破坏东西等。得分高可能提示存在情绪控制问题。",
+                "反映对特定事物或场景的恐惧，如怕空旷场所、怕乘交通工具等。得分高可能提示存在恐怖症状。",
+                "反映猜疑、偏执的思维方式，如感到别人在监视自己、别人想害自己等。得分高可能提示提示存在偏执倾向。",
+                "反映一些精神病性症状，如听到旁人听不到的声音、感到思维被控制等。得分高需要引起重视。",
+                "反映睡眠、饮食、对性的兴趣等方面的问题，以及对自己的评价等。"
+            ];
+            
+            // 总体评价
+            let overallAssessment = '';
+            let totalScoreInterpretation = '';
+            let positiveCountInterpretation = '';
+            let totalIndexInterpretation = '';
+            
+            if (totalIndex < 1.5) {
+                overallAssessment = '<p class="font-medium text-green-700">心理状态良好</p><p>未发现明显心理症状，您的心理健康状况总体良好。建议继续保持积极乐观的生活态度，定期进行自我心理评估，预防心理问题的发生。</p>';
+                totalScoreInterpretation = '总分正常';
+                positiveCountInterpretation = '阳性症状较少';
+                totalIndexInterpretation = '症状程度轻微';
+            } else if (totalIndex < 2.5) {
+                overallAssessment = '<p class="font-medium text-yellow-700">存在轻度心理症状</p><p>您存在轻度心理症状，这些症状可能对您的日常生活产生一定明显明显轻微影响。建议通过适当的方式进行自我调节，如保持良好的生活习惯、适当运动、与亲友交流等。如症状持续或加重，建议寻求专业心理咨询。</p>';
+                totalScoreInterpretation = '总分略偏高';
+                positiveCountInterpretation = '阳性症状症状较多';
+                totalIndexInterpretation = '症状症状程度较轻';
+            } else if (totalIndex < 3.5) {
+                overallAssessment = '<p class="font-medium text-yellow-700">存在中度心理症状</p><p>您存在中度心理症状，这些症状可能已经对您的日常生活、学习或工作产生了一定的影响。建议尽快快寻求专业心理咨询师的帮助，进行系统的心理干预。同时，可尝试一些自我调节的方法，如正念冥想、深呼吸练习等。</p>';
+                totalScoreInterpretation = '总分明显偏高';
+                positiveCountInterpretation = '阳性症状较多';
+                totalIndexInterpretation = '症状程度中等';
+            } else {
+                overallAssessment = '<p class="font-medium text-red-700">存在较严重心理症状</p><p>您存在较较严重的心理症状，这些症状可能已经严重影响了您的日常生活、学习或工作。建议立即即寻求专业心理医生或精神科医生的帮助，进行全面的评估和治疗。请不要忽视这些症状，及时的专业干预非常重要。</p>';
+                totalScoreInterpretation = '总分显著偏高';
+                positiveCountInterpretation = '阳性症状很多';
+                totalIndexInterpretation = '症状程度严重';
+            }
+            
+            // 因子评价
+            const factorAssessments = factorIndexes.map((index, index2) => {
+                let level = '';
+                let levelClass = '';
+                let levelDescription = '';
+                
+                if (index < 1.5) {
+                    level = '正常';
+                    levelClass = 'bg-green-100 text-green-800';
+                    levelDescription = '无明显症状';
+                } else if (index < 2.5) {
+                    level = '轻度';
+                    levelClass = 'bg-blue-100 text-blue-800';
+                    levelDescription = '症状轻微，可能对生活影响不大';
+                } else if (index < 3.5) {
+                    level = '中度';
+                    levelClass = 'bg-yellow-100 text-yellow-800';
+                    levelDescription = '症状明显，可能对生活有一定影响';
+                } else {
+                    level = '重度';
+                    levelClass = 'bg-red-100 text-red-800';
+                    levelDescription = '症状严重，可能对生活有显著影响';
+                }
+                
+                return {
+                    name: factorNames[index2],
+                    score: index.toFixed(1),
+                    level: level,
+                    levelClass: levelClass,
+                    levelDescription: levelDescription,
+                    interpretation: factorInterpretations[index2]
+                };
+            });
+            
+            // 症状分布分析
+            const symptomDistribution = {
+                "躯体化": factorAssessments[0].level,
+                "强迫症状": factorAssessments[1].level,
+                "人际关系敏感": factorAssessments[2].level,
+                "抑郁": factorAssessments[3].level,
+                "焦虑": factorAssessments[4].level,
+                "敌对": factorAssessments[5].level,
+                "恐怖": factorAssessments[6].level,
+                "偏执": factorAssessments[7].level,
+                "精神病性": factorAssessments[8].level,
+                "其他": factorAssessments[9].level
+            };
+            
+            // 症状严重程度分布
+            const severityDistribution = {
+                "从无": appState.answers.filter(score => score === 1).length,
+                "很轻": appState.answers.filter(score => score === 2).length,
+                "中等": appState.answers.filter(score => score === 3).length,
+                "偏重": appState.answers.filter(score => score === 4).length,
+                "严重": appState.answers.filter(score => score === 5).length
+            };
+            
+            // 专业建议
+            let professionalAdvice = '';
+            let levelBasedAdvice = '';
+            
+            if (totalIndex < 1.5) {
+                professionalAdvice = `
+                    <p><strong>心理状态良好</strong></p>
+                    <p>您的心理状态总体良好，未发现明显的心理症状。这表明您目前的心理适应能力较强，能够较好地应对生活中的各种压力和挑战。</p>
+                    <p>建议您继续保持积极乐观的生活态度，培养健康的生活习惯，如规律作息、均衡饮食、适当运动等。同时，建议定期进行自我心理评估，关注自己的心理健康状况，预防心理问题的发生。</p>
+                `;
+                
+                levelBasedAdvice = `
+                    <p><span class="font-medium">一级预防：</span>保持健康生活方式，定期进行自我心理评估，学习心理健康知识，提高心理调适能力。</p>
+                `;
+            } else if (totalIndex < 2.5) {
+                professionalAdvice = `
+                    <p><strong>轻度心理症状</strong></p>
+                    <p>您存在轻度心理症状，这些症状可能与近期的生活压力、工作负担或环境变化有关。目前这些症状对您的日常生活影响较小，但仍需关注。</p>
+                    <p>建议您通过以下方式进行自我调节：</p>
+                    <ul class="list-disc list-inside">
+                        <li>保持良好的生活习惯，保证充足的睡眠和休息</li>
+                        <li>适当进行体育锻炼，如散步、慢跑、瑜伽等</li>
+                        <li>与亲友保持良好沟通，分享自己的感受和经历</li>
+                        <li>学习放松技巧，如深呼吸、冥想、渐进性肌肉松弛等</li>
+                        <li>合理安排工作和生活，避免过度压力</li>
+                    </ul>
+                    <p>如症状持续存在或加重，建议寻求专业心理咨询师的帮助。</p>
+                `;
+                
+                levelBasedAdvice = `
+                    <p><span class="font-medium">二级预防：</span>学习并运用心理调适方法，改善生活方式，减轻压力，必要时寻求心理咨询帮助。</p>
+                `;
+            } else if (totalIndex < 3.5) {
+                professionalAdvice = `
+                    <p><strong>中度心理症状</strong></p>
+                    <p>您存在中度心理症状，这些症状可能已经对您的日常生活、学习或工作产生了一定的影响。建议您尽快寻求专业心理咨询师的帮助，进行系统的心理干预。</p>
+                    <p>在寻求专业帮助的同时，您可以尝试以下自我调节方法：</p>
+                    <ul class="list-disc list-inside">
+                        <li>学习并练习正念冥想，提高对当下的觉察能力</li>
+                        <li>进行适度的体育锻炼，如快走、游泳、太极拳等</li>
+                        <li>与亲友保持联系，获得情感支持</li>
+                        <li>合理安排作息时间，保证充足的睡眠</li>
+                        <li>减少咖啡因、酒精等刺激性物质的摄入</li>
+                    </ul>
+                    <p>请记住，寻求专业帮助是解决心理问题的有效途径，不必感到羞耻或不安。</p>
+                `;
+                
+                levelBasedAdvice = `
+                    <p><span class="font-medium">三级预防：</span>寻求专业心理咨询，进行系统心理干预，防止症状进一步发展，促进心理康复。</p>
+                `;
+            } else {
+                professionalAdvice = `
+                    <p><strong>较严重心理症状</strong></p>
+                    <p>您存在较严重的心理症状，这些症状可能已经严重影响了您的日常生活、学习或工作。建议您立即寻求专业心理医生或精神科医生的帮助，进行全面的评估和治疗。</p>
+                    <p>在寻求专业帮助之前，请务必注意以下几点：</p>
+                    <ul class="list-disc list-inside">
+                        <li>如果您有自伤或伤人的想法，请立即联系亲友陪伴或前往最近的医院急诊</li>
+                        <li>尽量避免独处，与亲友保持联系</li>
+                        <li>避免饮酒、吸烟或使用其他精神活性物质</li>
+                        <li>保证充足的睡眠和休息</li>
+                        <li>进行简单的自我照顾活动，如散步、听音乐等</li>
+                    </ul>
+                    <p>请不要忽视这些症状，及时的专业干预非常重要。心理问题和身体疾病一样，早期干预可以获得更好的治疗效果。</p>
+                `;
+                
+                levelBasedAdvice = `
+                    <p><span class="font-medium">四级干预：</span>寻求精神科医生评估和治疗，必要时进行药物治疗和心理治疗相结合的综合干预。</p>
+                `;
+            }
+            
+            // 保存结果
+            appState.results = {
+                totalScore: totalScore,
+                positiveCount: positiveCount,
+                totalIndex: totalIndex.toFixed(1),
+                positiveIndex: positiveIndex.toFixed(1),
+                overallAssessment: overallAssessment,
+                totalScoreInterpretation: totalScoreInterpretation,
+                positiveCountInterpretation: positiveCountInterpretation,
+                totalIndexInterpretation: totalIndexInterpretation,
+                factors: factorAssessments,
+                symptomDistribution: symptomDistribution,
+                severityDistribution: severityDistribution,
+                professionalAdvice: professionalAdvice,
+                levelBasedAdvice: levelBasedAdvice,
+                testDate: new Date().toLocaleString('zh-CN', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                })
+            };
+            
+            saveState();
+        }
+
+        // 显示测试结果
+        function displayResults() {
+            const results = appState.results;
+            
+            // 显示测试日期
+            document.getElementById('test-date').textContent = results.testDate;
+            
+            // 显示总体评估
+            elements.totalScore.textContent = results.totalScore;
+            elements.positiveCount.textContent = results.positiveCount;
+            elements.totalIndex.textContent = results.totalIndex;
+            
+            // 显示总分解释
+            document.getElementById('total-score-interpretation').textContent = results.totalScoreInterpretation;
+            document.getElementById('positive-count-interpretation').textContent = results.positiveCountInterpretation;
+            document.getElementById('total-index-interpretation').textContent = results.totalIndexInterpretation;
+            
+            // 显示总体评价
+            elements.overallAssessment.innerHTML = results.overallAssessment;
+            
+            // 显示因子得分图表
+            displayFactorsChart(results.factors);
+            
+            // 显示因子得分详情
+            displayFactorsDetails(results.factors);
+            
+            // 显示症状分布
+            displaySymptomDistribution(results.symptomDistribution);
+            
+            // 显示症状严重程度分布
+            displaySeverityDistribution(results.severityDistribution);
+            
+            // 显示专业建议
+            if (elements.professionalAdvice) {
+                elements.professionalAdvice.innerHTML = results.professionalAdvice;
+            } else {
+                console.error('professionalAdvice元素未找到');
+            }
+            
+            const levelBasedAdviceElement = document.getElementById('level-based-advice');
+            if (levelBasedAdviceElement) {
+                levelBasedAdviceElement.innerHTML = results.levelBasedAdvice;
+            } else {
+                console.error('level-based-advice元素未找到');
+            }
+        }
+        
+        // 显示因子得分图表
+        function displayFactorsChart(factors) {
+            const ctx = document.getElementById('factors-chart');
+            
+            // 如果图表已存在，先销毁
+            if (window.factorsChartInstance) {
+                window.factorsChartInstance.destroy();
+            }
+            
+            // 准备图表数据
+            const labels = factors.slice(0, 9).map(factor => factor.name); // 不显示"其他"因子
+            const data = factors.slice(0, 9).map(factor => parseFloat(factor.score));
+            const backgroundColors = factors.slice(0, 9).map(factor => {
+                if (factor.level === '正常') return 'rgba(16, 185, 129, 0.6)'; // 绿色
+                if (factor.level === '轻度') return 'rgba(59, 130, 246, 0.6)'; // 蓝色
+                if (factor.level === '中度') return 'rgba(245, 158, 11, 0.6)'; // 黄色
+                return 'rgba(239, 68, 68, 0.6)'; // 红色
+            });
+            
+            // 创建图表
+            window.factorsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '因子得分',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: '得分'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '因子'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const factor = factors[context.dataIndex];
+                                    return `得分: ${factor.score} (${factor.level})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 显示因子得分详情
+        function displayFactorsDetails(factors) {
+            elements.factorsContainer.innerHTML = '';
+            
+            factors.forEach((factor, index) => {
+                // 跳过"其他"因子，在症状分布中显示
+                if (index === 9) return;
+                
+                const factorElement = document.createElement('div');
+                factorElement.className = 'bg-card rounded-xl p-3 xs:p-4 shadow-sm';
+                
+                // 因子名称、得分和水平
+                const factorHeader = document.createElement('div');
+                factorHeader.className = 'flex justify-between items-center mb-2';
+                
+                const factorName = document.createElement('span');
+                factorName.className = 'text-sm font-medium';
+                factorName.textContent = factor.name;
+                
+                const factorScore = document.createElement('span');
+                factorScore.className = 'text-xs px-2 py-1 rounded-full ' + factor.levelClass;
+                factorScore.textContent = `${factor.score} (${factor.level})`;
+                
+                factorHeader.appendChild(factorName);
+                factorHeader.appendChild(factorScore);
+                
+                // 因子解释
+                const factorInterpretation = document.createElement('div');
+                factorInterpretation.className = 'text-xs text-muted';
+                factorInterpretation.innerHTML = `
+                    <p class="mb-1">${factor.interpretation}</p>
+                    <p class="text-[10px] mt-1">${factor.levelDescription}</p>
+                `;
+                
+                factorElement.appendChild(factorHeader);
+                factorElement.appendChild(factorInterpretation);
+                
+                elements.factorsContainer.appendChild(factorElement);
+            });
+        }
+        
+        // 显示症状分布
+        function displaySymptomDistribution(distribution) {
+            const container = document.getElementById('symptom-distribution');
+            container.innerHTML = '';
+            
+            // 按严重程度排序
+            const sortedSymptoms = Object.entries(distribution)
+                .sort((a, b) => {
+                    const severityOrder = { '重度': 4, '中度': 3, '轻度': 2, '正常': 1 };
+                    return severityOrder[b[1]] - severityOrder[a[1]];
+                });
+            
+            // 显示前5个最严重的症状
+            const topSymptoms = sortedSymptoms.slice(0, 5);
+            
+            topSymptoms.forEach(([symptom, level]) => {
+                const symptomElement = document.createElement('div');
+                symptomElement.className = 'flex justify-between items-center';
+                
+                const symptomName = document.createElement('span');
+                symptomName.className = 'text-xs';
+                symptomName.textContent = symptom;
+                
+                const symptomLevel = document.createElement('span');
+                const levelClass = level === '正常' ? 'bg-green-100 text-green-800' :
+                                  level === '轻度' ? 'bg-blue-100 text-blue-800' :
+                                  level === '中度' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-red-100 text-red-800';
+                
+                symptomLevel.className = `text-[10px] px-2 py-0.5 rounded-full ${levelClass}`;
+                symptomLevel.textContent = level;
+                
+                symptomElement.appendChild(symptomName);
+                symptomElement.appendChild(symptomLevel);
+                
+                container.appendChild(symptomElement);
+            });
+            
+            // 如果没有症状或所有症状都正常
+            if (topSymptoms.length === 0 || topSymptoms.every(([_, level]) => level === '正常')) {
+                const noSymptomElement = document.createElement('p');
+                noSymptomElement.className = 'text-xs text-muted text-center';
+                noSymptomElement.textContent = '未发现明显症状';
+                container.appendChild(noSymptomElement);
+            }
+        }
+        
+        // 显示症状严重程度分布
+        function displaySeverityDistribution(distribution) {
+            const container = document.getElementById('severity-distribution');
+            container.innerHTML = '';
+            
+            const totalAnswers = Object.values(distribution).reduce((sum, count) => sum + count, 0);
+            
+            Object.entries(distribution).forEach(([severity, count]) => {
+                const severityElement = document.createElement('div');
+                severityElement.className = 'flex flex-col';
+                
+                const severityHeader = document.createElement('div');
+                severityHeader.className = 'flex justify-between items-center mb-1';
+                
+                const severityName = document.createElement('span');
+                severityName.className = 'text-xs';
+                severityName.textContent = severity;
+                
+                const severityCount = document.createElement('span');
+                severityCount.className = 'text-[10px] text-muted';
+                const percentage = totalAnswers > 0 ? ((count / totalAnswers) * 100).toFixed(0) + '%' : '0%';
+                severityCount.textContent = `${count}项 (${percentage})`;
+                
+                severityHeader.appendChild(severityName);
+                severityHeader.appendChild(severityCount);
+                
+                // 进度条
+                const progressBarContainer = document.createElement('div');
+                progressBarContainer.className = 'h-1.5 bg-gray-200 rounded-full overflow-hidden';
+                
+                const progressBar = document.createElement('div');
+                progressBar.className = 'h-full rounded-full transition-smooth';
+                
+                // 根据严重程度设置颜色
+                if (severity === '从无') {
+                    progressBar.classList.add('bg-green-400');
+                } else if (severity === '很轻') {
+                    progressBar.classList.add('bg-blue-400');
+                } else if (severity === '中等') {
+                    progressBar.classList.add('bg-yellow-400');
+                } else if (severity === '偏重') {
+                    progressBar.classList.add('bg-orange-400');
+                } else {
+                    progressBar.classList.add('bg-red-400');
+                }
+                
+                // 设置进度条宽度
+                progressBar.style.width = percentage;
+                
+                progressBarContainer.appendChild(progressBar);
+                
+                severityElement.appendChild(severityHeader);
+                severityElement.appendChild(progressBarContainer);
+                
+                container.appendChild(severityElement);
+            });
+        }
+
+        // 保存状态到本地存储
+        function saveState() {
+            localStorage.setItem('soulTestState', JSON.stringify({
+                currentPage: appState.currentPage,
+                currentQuestionIndex: appState.currentQuestionIndex,
+                answers: appState.answers,
+                results: appState.results
+            }));
+        }
+
+        // 从本地存储加载状态
+        function loadState() {
+            console.log('loadState函数被调用');
+            
+            const savedState = localStorage.getItem('soulTestState');
+            if (savedState) {
+                console.log('找到保存的状态');
+                try {
+                    const parsedState = JSON.parse(savedState);
+                    appState.currentPage = parsedState.currentPage || 'home';
+                    appState.currentQuestionIndex = parsedState.currentQuestionIndex || 0;
+                    appState.answers = parsedState.answers || Array(questions.length).fill(null);
+                    appState.results = parsedState.results || null;
+                    console.log('状态解析成功');
+                } catch (error) {
+                    console.error('状态解析失败:', error);
+                    // 初始化新状态
+                    appState.currentPage = 'home';
+                    appState.currentQuestionIndex = 0;
+                    appState.answers = Array(questions.length).fill(null);
+                    appState.results = null;
+                }
+            } else {
+                console.log('未找到保存的状态，初始化新状态');
+                // 初始化新状态
+                appState.currentPage = 'home';
+                appState.currentQuestionIndex = 0;
+                appState.answers = Array(questions.length).fill(null);
+                appState.results = null;
+            }
+            
+            console.log('状态加载完成');
+            console.log('当前页面:', appState.currentPage);
+            console.log('当前问题索引:', appState.currentQuestionIndex);
+            console.log('答案数组长度:', appState.answers.length);
+        }
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
