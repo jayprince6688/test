@@ -2162,6 +2162,9 @@ $(document).ready(function () {
 </div>
 
 <script>
+// SCL-90 题目数据（标准90题版本）...
+// 这里省略了无关代码
+
 function verifyCode() {
   const code = $('#verify-code-input').val().trim().toUpperCase();
   if (!code || code.length !== 6) {
@@ -2169,13 +2172,14 @@ function verifyCode() {
     return;
   }
 
+  // 替换下面的 URL 为你后端接口的实际 URL
   $.ajax({
-    url: 'https://soultest.top/api/verify',
+    url: 'https://sweet-hall-ef5c.jayprince6688.workers.dev', // 后端接口 URL
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({ code: code }),
     success: function (res) {
-      if (res.valid) {
+      if (res.success) {
         // ✅ 显示成功提示
         Swal.fire({
           icon: 'success',
@@ -2192,7 +2196,8 @@ function verifyCode() {
           }
         });
       } else {
-        $('#verify-message').text(res.message).removeClass('hidden');
+        // ✅ 显示失败提示
+        $('#verify-message').text(res.msg || '授权码无效或已过期').removeClass('hidden');
       }
     },
     error: function () {
@@ -2201,13 +2206,36 @@ function verifyCode() {
   });
 }
 
-
-
 function closeVerifyModal() {
   $('#verify-modal').addClass('hidden');
   $('#verify-message').addClass('hidden');
   $('#verify-code-input').val('');
 }
+
+$(document).ready(function () {
+  if (!checkAuthPass()) showPage('home'); // ✅ 没通行证，正常首页
+});
+
+function checkAuthPass() {
+  const code = localStorage.getItem('scl90_authorized');
+  const expire = parseInt(localStorage.getItem('scl90_expire'), 10);
+  if (code && expire && Date.now() < expire) {
+    // ✅ 仍在48小时内，直接进入测试
+    startTest(); 
+    return true;
+  } else {
+    localStorage.removeItem('scl90_authorized');
+    localStorage.removeItem('scl90_expire');
+    return false;
+  }
+}
+
+function startTest() {
+  $('#verify-modal').removeClass('hidden');
+}
+
+// 页面元素...
+// 这里省略了无关代码
 </script>
 </script>
 </body>
