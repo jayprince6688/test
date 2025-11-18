@@ -2170,7 +2170,7 @@ function verifyCode() {
   }
 
   $.ajax({
-    url: 'https://api.soultest.top/api/verify',
+    url: '/api/verify',
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({ code: code }),
